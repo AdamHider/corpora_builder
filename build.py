@@ -39,6 +39,10 @@ class Builder :
     def iter_ready(self) :
         for folder in self.ready_dirs :
             self.iter_dir(f"{self.path}/{folder}", 0)
+            print('===============================')
+            self.count_file(self.source_file, self.lang_pair[0], folder)
+            self.count_file(self.target_file, self.lang_pair[1], folder)
+            print('===============================')
 
     def iter_dir(self, path, level) :
         file_list = os.listdir(path)
@@ -106,10 +110,15 @@ class Builder :
         if not is_source or not is_target:
             self.blacklist = self.blacklist + file_list
 
+    def count_file(self, filename, lang, dir):
+        with open(filename, 'r', encoding="utf-8") as fp:
+            lines = len(fp.readlines())
+            print(f'{dir} {lang}: {lines}')
+
+
     def build(self):
         self.clean()
         self.iter_ready()
-        print(self.blacklist)
 
 # entry.is_file() will check
 # if entry is a file or not and
@@ -122,5 +131,5 @@ class Builder :
 # free acquired resources
 # use scandir.close() method
 
-builder = Builder(['crh-RU', 'uk'])
+builder = Builder(['crh-RU', 'ru'])
 builder.build()
