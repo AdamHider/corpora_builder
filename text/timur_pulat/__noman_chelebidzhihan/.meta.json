@@ -1,0 +1,20 @@
+{
+  "sync": [473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484, 485, 486],
+  "notes": [
+    "s473-486: ru"
+  ],
+  "attributes": {
+    "crh-RU": {
+      "author": "Timur Pulat",
+      "title": "Noman Chelebidzhihan",
+      "year": "1234",
+      "language": "Qırımtatar tili"
+    },
+    "ru": {
+      "author": "Тимур Пулатов",
+      "title": "Номан Челебиджихан",
+      "year": "1234",
+      "language": "Крымскотатарский"
+    }
+  }
+}
