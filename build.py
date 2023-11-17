@@ -6,11 +6,11 @@ import re
 class Builder :
     def __init__(self, lang_pair) :
         self.lang_pair = lang_pair
-        self.ready_dirs = self.get_ready('./text_ready.txt')
+        self.whitelist = self.get_ready(f"./whitelist/{self.lang_pair[0]}_{self.lang_pair[1]}.txt")
         self.path = './text'
         
-        self.source_file = f'./target/{self.lang_pair[0]}-{self.lang_pair[1]}/{self.lang_pair[0]}.txt'
-        self.target_file = f'./target/{self.lang_pair[0]}-{self.lang_pair[1]}/{self.lang_pair[1]}.txt'
+        self.source_file = f'./target/{self.lang_pair[0]}_{self.lang_pair[1]}/{self.lang_pair[0]}.txt'
+        self.target_file = f'./target/{self.lang_pair[0]}_{self.lang_pair[1]}/{self.lang_pair[1]}.txt'
 
         self.blacklist = []
 
@@ -28,8 +28,8 @@ class Builder :
     def clean(self) :
         if not os.path.exists('./target'):
             os.mkdir('./target') 
-        if not os.path.exists(f'./target/{self.lang_pair[0]}-{self.lang_pair[1]}'):
-            os.mkdir(f'./target/{self.lang_pair[0]}-{self.lang_pair[1]}') 
+        if not os.path.exists(f'./target/{self.lang_pair[0]}_{self.lang_pair[1]}'):
+            os.mkdir(f'./target/{self.lang_pair[0]}_{self.lang_pair[1]}') 
         if os.path.exists(self.source_file):
             os. remove(self.source_file)
         if os.path.exists(self.target_file):
@@ -37,7 +37,7 @@ class Builder :
 
 
     def iter_ready(self) :
-        for folder in self.ready_dirs :
+        for folder in self.whitelist :
             self.iter_dir(f"{self.path}/{folder}", 0)
             print('===============================')
             self.count_file(self.source_file, self.lang_pair[0], folder)
@@ -59,13 +59,17 @@ class Builder :
                     if entry.name in self.blacklist:
                         continue
                     if entry.name.endswith('.md'):
-                        regex = r"\.(" + re.escape(self.lang_pair[0]) + r"|" + re.escape(self.lang_pair[1]) + r")\."
+                        regex = r"\.*(" + re.escape(self.lang_pair[0]) + r"|" + re.escape(self.lang_pair[1]) + r")\."
                         chap_and_lang = re.search(regex, entry.name) 
                         if chap_and_lang:
                             chap_and_lang = chap_and_lang.group().split('.')
                             lang = chap_and_lang[1]
                             text = self.extract_text(entry.path)
                             self.update_target_file(lang, text)
+                            if lang == self.lang_pair[0] :
+                                self.count_file(self.source_file, self.lang_pair[0], entry.name)
+                            else :
+                                self.count_file(self.target_file, self.lang_pair[1], entry.name)
         obj.close()
 
     def extract_text(self, filename) :
@@ -79,7 +83,7 @@ class Builder :
         return result
 
     def update_target_file(self, lang, data) :
-        filename = f"./target/{self.lang_pair[0]}-{self.lang_pair[1]}/{lang}.txt"
+        filename = f"./target/{self.lang_pair[0]}_{self.lang_pair[1]}/{lang}.txt"
         if os.path.exists(filename):
             with open(filename, encoding="utf-8") as output1:
                 lines = output1.readlines()
@@ -111,9 +115,10 @@ class Builder :
             self.blacklist = self.blacklist + file_list
 
     def count_file(self, filename, lang, dir):
-        with open(filename, 'r', encoding="utf-8") as fp:
-            lines = len(fp.readlines())
-            print(f'{dir} {lang}: {lines}')
+        if os.path.exists(filename):
+            with open(filename, 'r', encoding="utf-8") as fp:
+                lines = len(fp.readlines())
+                print(f'{dir} {lang}: {lines}')
 
 
     def build(self):
