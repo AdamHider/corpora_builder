@@ -136,5 +136,5 @@ class Builder :
 # free acquired resources
 # use scandir.close() method
 
-builder = Builder(['crh-RU', 'ru'])
+builder = Builder(['crh-RU', 'uk'])
 builder.build()
